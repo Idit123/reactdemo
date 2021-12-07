@@ -17,11 +17,10 @@ exports.signup = async (req, res) => {
   var email = user.email
   var password = user.password
   var gender = user.gender
-  var country = user.country
-  var checkbox1 = user.lang1
-  var checkbox2 = user.lang2
-  var checkbox3 = user.lang3
-
+  var checkbox1 = user.check1
+  var checkbox2 = user.check2
+  var checkbox3 = user.check3
+  var state = user.state
   var language = []
 
   if (checkbox1 != undefined) {
@@ -34,8 +33,14 @@ exports.signup = async (req, res) => {
     language.push(checkbox3)
   }
   let lang = language.join()
-
-  if (username != "" && email != "" && password != "") {
+  if (
+    username != "" &&
+    email != "" &&
+    password != "" &&
+    lang != "" &&
+    gender != "" &&
+    state != ""
+  ) {
     const user = await users.findOne({
       where: {
         email: email,
@@ -49,7 +54,7 @@ exports.signup = async (req, res) => {
         email: email,
         password: password,
         gender: gender,
-        country: country,
+        state: state,
         language: lang,
       })
       if (data) {
@@ -57,7 +62,7 @@ exports.signup = async (req, res) => {
       }
     }
   } else {
-    res.send({ message: "Username, Email and password is mandatory field." })
+    res.send({ message: "Fill Up All field." })
   }
 }
 

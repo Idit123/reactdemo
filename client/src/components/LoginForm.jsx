@@ -1,8 +1,14 @@
 import React, { useState } from "react"
 import Axios from "axios"
+import { useNavigate } from "react-router-dom"
 import { LoginStyle } from "../style/login.style"
 
+// import { UseContext } from "../App"
+
 export default function LoginForm() {
+  // const { dispath } = useContext(UseContext)
+
+  const Navigate = useNavigate()
   const [useremail, setUserEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -16,9 +22,10 @@ export default function LoginForm() {
     }).then((response) => {
       if (response.data.message) {
         setLoginStatus(response.data.message)
-        console.log(loginStatus)
       } else {
-        setLoginStatus(response.data[0].username)
+        // dispath({ type: "USER", payload: true })
+        setLoginStatus(response.data.email)
+        Navigate("/")
       }
     })
   }
@@ -27,6 +34,7 @@ export default function LoginForm() {
       <div className="container">
         <div className="box">
           <form>
+            <p>{loginStatus}</p>
             <h2>Login</h2>
             <div className="row">
               <label className="email">Email</label>

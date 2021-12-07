@@ -6,29 +6,57 @@ export default function RegisterForm() {
   const [username, setUserName] = useState("")
   const [useremail, setUserEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [currentRadioValue, setRadioValue] = useState("")
+  const [Check1Value, setCheck1Value] = useState(false)
+  const [Check2Value, setCheck2Value] = useState(false)
+  const [Check3Value, setCheck3Value] = useState(false)
+  const [DropValue, setDropValue] = useState("")
+
+  const [loginStatus, setLoginStatus] = useState("")
+
   Axios.defaults.withCredentials = true
+
   const register = (e) => {
     e.preventDefault()
     Axios.post("http://localhost:9000/register", {
       username: username,
       email: useremail,
       password: password,
+      gender: currentRadioValue,
+      check1: Check1Value,
+      check2: Check2Value,
+      check3: Check3Value,
+      state: DropValue,
     }).then((response) => {
-      // console.log(response)
+      if (response.data.message) {
+        setLoginStatus(response.data.message)
+      } else {
+        setLoginStatus(response.data.username)
+      }
     })
+    setUserName("")
+    setUserEmail("")
+    setPassword("")
+    setRadioValue("")
+    setCheck1Value(false)
+    setCheck2Value(false)
+    setCheck3Value(false)
+    setDropValue("")
   }
 
   return (
     <RegisterStyle>
       <div className="container">
         <div className="registration">
-          <form>
+          <form onSubmit={register}>
+            <p>{loginStatus}</p>
             <h2>Register</h2>
             <div className="row">
               <label className="name">Name</label>
               <div className="col">
                 <input
                   type="text"
+                  value={username}
                   onChange={(e) => {
                     setUserName(e.target.value)
                   }}
@@ -40,6 +68,7 @@ export default function RegisterForm() {
               <div className="col">
                 <input
                   type="email"
+                  value={useremail}
                   onChange={(e) => {
                     setUserEmail(e.target.value)
                   }}
@@ -51,6 +80,7 @@ export default function RegisterForm() {
               <div className="col">
                 <input
                   type="password"
+                  value={password}
                   onChange={(e) => {
                     setPassword(e.target.value)
                   }}
@@ -66,6 +96,10 @@ export default function RegisterForm() {
                     type="checkbox"
                     value="English"
                     id="check1"
+                    checked={Check1Value}
+                    onChange={(e) => {
+                      setCheck1Value(!Check1Value)
+                    }}
                   />
                   <label className="form-check-label">English</label>
                 </div>
@@ -75,6 +109,10 @@ export default function RegisterForm() {
                     type="checkbox"
                     value="Gujrati"
                     id="check2"
+                    checked={Check2Value}
+                    onChange={(e) => {
+                      setCheck2Value(!Check2Value)
+                    }}
                   />
                   <label className="form-check-label">Gujarati</label>
                 </div>
@@ -84,6 +122,10 @@ export default function RegisterForm() {
                     type="checkbox"
                     value="Hindi"
                     id="check3"
+                    checked={Check3Value}
+                    onChange={(e) => {
+                      setCheck3Value(!Check3Value)
+                    }}
                   />
                   <label className="form-check-label">Hindi</label>
                 </div>
@@ -96,6 +138,10 @@ export default function RegisterForm() {
                     type="radio"
                     name="flexRadioDefault"
                     id="flexRadioDefault1"
+                    value="Male"
+                    onChange={(e) => {
+                      setRadioValue(e.target.value)
+                    }}
                   />
                   <label className="form-check-label">Male</label>
                 </div>
@@ -105,12 +151,21 @@ export default function RegisterForm() {
                     type="radio"
                     name="flexRadioDefault"
                     id="flexRadioDefault2"
+                    value="Female"
+                    onChange={(e) => {
+                      setRadioValue(e.target.value)
+                    }}
                   />
                   <label className="form-check-label">Female</label>
                 </div>
               </div>
               <div className="dropdown">
-                <select>
+                <select
+                  value={DropValue}
+                  onChange={(e) => {
+                    setDropValue(e.target.value)
+                  }}
+                >
                   <option value="Rajkot">Rajkot</option>
                   <option value="Ahmedabad">Ahmedabad</option>
                   <option value="Vadodara">Vadodara</option>
@@ -120,11 +175,7 @@ export default function RegisterForm() {
               </div>
             </div>
             <div className="submit">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                onClick={register}
-              >
+              <button type="submit" className="btn btn-primary">
                 Submit
               </button>
             </div>
