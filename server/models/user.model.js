@@ -7,9 +7,9 @@ module.exports = (sequelize, Sequelize) => {
       username: { type: Sequelize.STRING },
       email: { type: Sequelize.STRING },
       password: { type: Sequelize.STRING },
+      language: { type: Sequelize.STRING },
       gender: { type: Sequelize.STRING },
       state: { type: Sequelize.STRING },
-      language: { type: Sequelize.STRING },
     },
     {
       timestamps: false,
