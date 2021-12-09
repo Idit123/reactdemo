@@ -43,7 +43,7 @@ exports.signup = async (req, res) => {
         state: state,
       })
       if (data) {
-        res.send({ message: "Register Successfully." })
+        res.send({ success: "Register Successfully." })
       }
     }
   } else {
@@ -76,14 +76,14 @@ exports.login = async (req, res) => {
       const vaildPassword = await bcrypt.compare(password, user.password)
       if (vaildPassword) {
         req.session.user = user.id
-        res.send(user)
+        res.send({ success: "Login Successfully." })
       } else {
-        res.send({ message: "Please enter vaild password." })
+        res.send({ message: "Please enter your registration password." })
       }
     } else {
-      res.send({ message: "Please enter vaild email" })
+      res.send({ message: "Please enter your registration email." })
     }
   } else {
-    res.send({ message: "Fill Up Username and password!" })
+    res.send({ message: "Please enter your register Username and password!" })
   }
 }

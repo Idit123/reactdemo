@@ -7,8 +7,9 @@ export default function LoginForm() {
   const Navigate = useNavigate()
 
   const user = { email: "", password: "" }
+  const error = { email: "", password: "" }
   const [formValues, setformValues] = useState(user)
-  const [formErrors, setformErrors] = useState({})
+  const [formErrors, setFormErrors] = useState(error)
   const [loginStatus, setLoginStatus] = useState("")
 
   const handleChange = (e) => {
@@ -17,43 +18,53 @@ export default function LoginForm() {
   }
 
   const validate = (values) => {
-    const errors = {}
     const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
     if (!values.email) {
-      errors.email = "*Please enter your email Address."
+      setFormErrors({ email: "*Please enter your email Address." })
+      return false
     } else if (!regexEmail.test(values.email)) {
-      errors.email = "*Please enter valid email address."
-    }
-    if (!values.password) {
-      errors.password = "*Please enter your password."
+      setFormErrors({ email: "*Please enter valid email address." })
+      return false
+    } else if (!values.password) {
+      setFormErrors({ password: "*Please enter your password." })
+      return false
     } else if (values.password.length < 8) {
-      errors.password = "*Please add at least 8 charachter."
+      setFormErrors({ password: "*Please add at least 8 charachter." })
+      return false
     } else if (values.password.length > 15) {
-      errors.password = "*Please add maximum 15 charachter."
+      setFormErrors({ password: "*Please add maximum 15 charachter." })
+      return false
+    } else {
+      setFormErrors("")
+      return true
     }
-    return errors
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setformErrors(validate(formValues))
-    Axios.post("http://localhost:9000/login", {
-      userDetails: formValues,
-    }).then((response) => {
-      if (response.data.message) {
-        setLoginStatus(response.data.message)
-      } else {
-        setLoginStatus(response.data.success)
-        Navigate("/")
-      }
-    })
+    if (validate(formValues)) {
+      Axios.post("http://localhost:9000/login", {
+        userDetails: formValues,
+      }).then((response) => {
+        if (response.data.success) {
+          setLoginStatus({ success: response.data.success })
+          Navigate("/")
+        } else {
+          setLoginStatus({ error: response.data.message })
+        }
+      })
+    } else {
+      console.log("Error")
+    }
   }
+
   return (
     <LoginStyle>
       <div className="container">
         <div className="loginForm">
           <form onSubmit={handleSubmit}>
-            <h3 className="error-message">{loginStatus}</h3>
+            <h2 className="success-message">{loginStatus.success}</h2>
+            <h3 className="error-message">{loginStatus.error}</h3>
             <h1>Login</h1>
             <div className="input-data">
               <label>Email:</label>
@@ -64,7 +75,7 @@ export default function LoginForm() {
                 onChange={handleChange}
               />
             </div>
-            <p>{formErrors.email}</p>
+            {formErrors?.email && <p>{formErrors.email}</p>}
             <div className="input-data">
               <label>Password:</label>
               <input
@@ -74,7 +85,7 @@ export default function LoginForm() {
                 onChange={handleChange}
               />
             </div>
-            <p>{formErrors.password}</p>
+            {formErrors?.password && <p>{formErrors.password}</p>}
             <div className="submit">
               <button type="submit" className="btn btn-primary">
                 Submit

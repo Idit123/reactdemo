@@ -17,18 +17,52 @@ export const RegisterStyle = styled.div`
         .success-message {
           color: green;
         }
+        .error-message {
+          color: red;
+          font-size: 20px;
+        }
+        .image-data {
+          width: 100%;
+          padding: 5px;
+          display: flex;
+          align-items: center;
+          label {
+            width: 35%;
+            text-align: center;
+          }
+          .preview-image {
+            width: 65%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            input {
+              width: 60%;
+              font-size: 18px;
+            }
+            img {
+              width: 100px;
+              height: 100px;
+              border-radius: 50%;
+            }
+          }
+        }
         .input-data {
           display: flex;
           align-items: center;
           width: 100%;
+          padding: 5px;
           label {
             text-align: center;
             width: 35%;
           }
+          input {
+            width: 60%;
+          }
         }
         p {
           color: red;
-          text-align: center;
+          text-align: right;
+          margin: 0px;
         }
         .formsection {
           width: 100%;
@@ -62,15 +96,8 @@ export const RegisterStyle = styled.div`
             margin-left: 40px;
           }
         }
-        .error-message {
-          font-size: 12px;
-          span {
-            color: red;
-            text-align: left;
-          }
-        }
         .submit {
-          width: 100%;
+          padding: 10px;
           display: flex;
           justify-content: center;
         }

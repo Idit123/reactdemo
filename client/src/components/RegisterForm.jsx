@@ -11,8 +11,11 @@ export default function RegisterForm() {
     gender: "",
     state: "",
   }
+  const error = { username: "", email: "", password: "" }
+  const image = { preview: "", src: "" }
+  const [profileImage, setProfileImage] = useState(image)
+  const [formErrors, setFormErrors] = useState(error)
   const [formValues, setformValues] = useState(user)
-  const [formErrors, setformErrors] = useState({})
   const [checkValue, setCheckValue] = useState([])
   const [loginStatus, setLoginStatus] = useState("")
 
@@ -32,61 +35,92 @@ export default function RegisterForm() {
     setCheckValue(checkValue)
   }
 
-  const validate = (values, checkvalues) => {
-    const errors = {}
+  const validate = (values) => {
     const regexUserName = /^\S*$/
     const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
     if (!values.username) {
-      errors.username = "*Please enter your username."
+      setFormErrors({ username: "*Please enter your username." })
+      return false
     } else if (!regexUserName.test(values.username)) {
-      errors.username = "*Please enter valid username."
-    }
-    if (!values.email) {
-      errors.email = "*Please enter your email Address."
+      setFormErrors({ username: "*Please enter valid username." })
+      return false
+    } else if (!values.email) {
+      setFormErrors({ email: "*Please enter your email Address." })
+      return false
     } else if (!regexEmail.test(values.email)) {
-      errors.email = "*Please enter valid email address."
-    }
-    if (!values.password) {
-      errors.password = "*Please enter your password."
+      setFormErrors({ email: "*Please enter valid email address." })
+      return false
+    } else if (!values.password) {
+      setFormErrors({ password: "*Please enter your password." })
+      return false
     } else if (values.password.length < 8) {
-      errors.password = "*Please add at least 8 charachter."
+      setFormErrors({ password: "*Please add at least 8 charachter." })
+      return false
     } else if (values.password.length > 15) {
-      errors.password = "*Please add maximum 15 charachter."
+      setFormErrors({ password: "*Please add maximum 15 charachter." })
+      return false
+    } else if (!values.checkvalue) {
+      setFormErrors({ checkValue: "*Please select your languages." })
+      return false
+    } else if (!values.gender) {
+      setFormErrors({ gender: "*Please select your gender." })
+      return false
+    } else if (!values.state) {
+      setFormErrors({ state: "*Please select your state." })
+      return false
+    } else if (values.state === "City") {
+      setFormErrors({ state: "*Please select your state." })
+      return false
+    } else {
+      setFormErrors("")
+      return true
     }
-    if (!checkvalues) {
-      errors.checkValue = "*Please select your languages."
-    }
-    if (!values.gender) {
-      errors.gender = "*Please select your gender."
-    }
-    if (!values.state) {
-      errors.state = "*Please select your state."
-    }
-    return errors
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     formValues.checkvalue = checkValue.join()
-    setformErrors(validate(formValues, formValues.checkvalue))
-    Axios.post("http://localhost:9000/register", {
-      userDetails: formValues,
-    }).then((response) => {
-      if (response.data.message) {
-        setLoginStatus(response.data.message)
-      } else {
-        setLoginStatus(response.data.username)
-      }
-    })
+    if (validate(formValues)) {
+      Axios.post("http://localhost:9000/register", {
+        userDetails: formValues,
+      }).then((response) => {
+        if (response.data.success) {
+          setLoginStatus({ success: response.data.success })
+          setformValues("")
+          e.target.reset()
+        } else {
+          setLoginStatus({ errors: response.data.message })
+        }
+      })
+    } else {
+      console.log("Error")
+    }
   }
 
+  const onImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      let img = e.target.files[0]
+      // setProfileImage({ image: URL.createObjectURL(img) })
+      setProfileImage({ preview: img, src: URL.createObjectURL(img) })
+    }
+    console.log(e.target.files[0])
+    console.log(profileImage)
+  }
   return (
     <RegisterStyle>
       <div className="container">
         <div className="registrationForm">
           <form onSubmit={handleSubmit}>
-            <h3 className="success-message">{loginStatus}</h3>
+            <h2 className="success-message">{loginStatus.success}</h2>
+            <h3 className="error-message">{loginStatus.errors}</h3>
             <h1>Register</h1>
+            <div className="image-data">
+              <label>Profile Image:</label>
+              <div className="preview-image">
+                <input type="file" name="myImage" onChange={onImageChange} />
+                <img src={profileImage.src} alt="" />
+              </div>
+            </div>
             <div className="input-data">
               <label>Name: </label>
               <input
@@ -96,9 +130,7 @@ export default function RegisterForm() {
                 onChange={handleChange}
               />
             </div>
-
-            <p>{formErrors.username}</p>
-
+            {formErrors?.username && <p>{formErrors.username}</p>}
             <div className="input-data">
               <label>Email:</label>
               <input
@@ -108,7 +140,7 @@ export default function RegisterForm() {
                 onChange={handleChange}
               />
             </div>
-            <p>{formErrors.email}</p>
+            {formErrors?.email && <p>{formErrors.email}</p>}
             <div className="input-data">
               <label>Password:</label>
               <input
@@ -118,7 +150,7 @@ export default function RegisterForm() {
                 onChange={handleChange}
               />
             </div>
-            <p>{formErrors.password}</p>
+            {formErrors?.password && <p>{formErrors.password}</p>}
             <div className="formsection">
               <div className="SelectCheckBox">
                 <label>Languages</label>
@@ -187,7 +219,7 @@ export default function RegisterForm() {
                   value={formValues.state}
                   onChange={handleChange}
                 >
-                  <option>City</option>
+                  <option value="City">City</option>
                   <option value="Rajkot">Rajkot</option>
                   <option value="Ahmedabad">Ahmedabad</option>
                   <option value="Vadodara">Vadodara</option>
@@ -196,15 +228,9 @@ export default function RegisterForm() {
                 </select>
               </div>
             </div>
-            <div className="error-message">
-              <span>{formErrors.checkValue}</span>
-            </div>
-            <div className="error-message">
-              <span>{formErrors.gender}</span>
-            </div>
-            <div className="error-message">
-              <span>{formErrors.state}</span>
-            </div>
+            {formErrors.checkValue && <p>{formErrors.checkValue}</p>}
+            {formErrors.gender && <p>{formErrors.gender}</p>}
+            {formErrors.state && <p>{formErrors.state}</p>}
             <div className="submit">
               <button type="submit" className="btn btn-primary">
                 Submit
