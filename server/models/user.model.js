@@ -10,6 +10,7 @@ module.exports = (sequelize, Sequelize) => {
       language: { type: Sequelize.STRING },
       gender: { type: Sequelize.STRING },
       state: { type: Sequelize.STRING },
+      profile_image: { type: Sequelize.STRING },
     },
     {
       timestamps: false,

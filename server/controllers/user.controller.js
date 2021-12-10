@@ -2,6 +2,13 @@ const db = require("../models/index")
 const users = db.Users
 const bcrypt = require("bcrypt")
 
+//upload image
+
+exports.upload = async (req, res) => {
+  const data = req.files
+  res.send(req.body)
+}
+
 // Signup
 
 //POST
@@ -10,21 +17,20 @@ exports.signup = async (req, res) => {
 
   const username = user.userDetails.username
   const email = user.userDetails.email
-  let password = user.userDetails.password
-  const checkvalue = user.userDetails.checkvalue
+  const password = user.userDetails.password
+  const language = user.userDetails.checkvalue
   const gender = user.userDetails.gender
   const state = user.userDetails.state
-
-  const salt = await bcrypt.genSalt(10)
-  password = await bcrypt.hash(password, salt)
+  const profile_image = user.userDetails.profile_image
 
   if (
     username != "" &&
     email != "" &&
     password != "" &&
-    checkvalue != "" &&
+    language != "" &&
     gender != "" &&
-    state != ""
+    state != "" &&
+    profile_image != ""
   ) {
     const user = await users.findOne({
       where: {
@@ -34,13 +40,17 @@ exports.signup = async (req, res) => {
     if (user) {
       res.send({ message: "Email is already exits." })
     } else {
+      const salt = await bcrypt.genSalt(10)
+      const encryptpassword = await bcrypt.hash(password, salt)
+
       let data = await users.create({
-        username: username,
-        email: email,
-        password: password,
-        language: checkvalue,
-        gender: gender,
-        state: state,
+        username,
+        email,
+        password: encryptpassword,
+        language,
+        gender,
+        state,
+        profile_image,
       })
       if (data) {
         res.send({ success: "Register Successfully." })

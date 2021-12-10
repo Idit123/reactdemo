@@ -8,12 +8,24 @@ export const RegisterStyle = styled.div`
     justify-content: center;
     align-items: center;
     .registrationForm {
+      width: auto;
       border: 1px solid #000;
       border-radius: 5px;
       form {
-        width: 100%;
         font-size: 18px;
         padding: 20px 25px;
+        .title-header {
+          display: flex;
+          align-items: center;
+          .title {
+            width: 100%;
+          }
+          img {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+          }
+        }
         .success-message {
           color: green;
         }
@@ -22,41 +34,28 @@ export const RegisterStyle = styled.div`
           font-size: 20px;
         }
         .image-data {
-          width: 100%;
-          padding: 5px;
           display: flex;
           align-items: center;
+          padding: 5px;
           label {
-            width: 35%;
+            width: 40%;
             text-align: center;
           }
-          .preview-image {
-            width: 65%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            input {
-              width: 60%;
-              font-size: 18px;
-            }
-            img {
-              width: 100px;
-              height: 100px;
-              border-radius: 50%;
-            }
+          input {
+            width: 100%;
+            font-size: 17px;
           }
         }
         .input-data {
           display: flex;
           align-items: center;
-          width: 100%;
           padding: 5px;
           label {
+            width: 40%;
             text-align: center;
-            width: 35%;
           }
           input {
-            width: 60%;
+            width: 100%;
           }
         }
         p {
@@ -64,6 +63,7 @@ export const RegisterStyle = styled.div`
           text-align: right;
           margin: 0px;
         }
+
         .formsection {
           width: 100%;
           display: flex;

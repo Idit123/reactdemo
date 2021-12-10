@@ -10,11 +10,11 @@ export default function RegisterForm() {
     checkvalue: "",
     gender: "",
     state: "",
+    profile_image: "",
   }
-  const error = { username: "", email: "", password: "" }
-  const image = { preview: "", src: "" }
-  const [profileImage, setProfileImage] = useState(image)
-  const [formErrors, setFormErrors] = useState(error)
+  const [profileImage, setProfileImage] = useState("")
+  const [imageData, setImageData] = useState()
+  const [formErrors, setFormErrors] = useState({})
   const [formValues, setformValues] = useState(user)
   const [checkValue, setCheckValue] = useState([])
   const [loginStatus, setLoginStatus] = useState("")
@@ -35,76 +35,91 @@ export default function RegisterForm() {
     setCheckValue(checkValue)
   }
 
-  const validate = (values) => {
+  const validate = (values, image) => {
     const regexUserName = /^\S*$/
     const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-    if (!values.username) {
+    if (!image) {
+      setFormErrors({ profile_image: "*Please upload profile image." })
+    } else if (!values.username) {
       setFormErrors({ username: "*Please enter your username." })
-      return false
     } else if (!regexUserName.test(values.username)) {
       setFormErrors({ username: "*Please enter valid username." })
-      return false
     } else if (!values.email) {
       setFormErrors({ email: "*Please enter your email Address." })
-      return false
     } else if (!regexEmail.test(values.email)) {
       setFormErrors({ email: "*Please enter valid email address." })
-      return false
     } else if (!values.password) {
       setFormErrors({ password: "*Please enter your password." })
-      return false
     } else if (values.password.length < 8) {
       setFormErrors({ password: "*Please add at least 8 charachter." })
-      return false
     } else if (values.password.length > 15) {
       setFormErrors({ password: "*Please add maximum 15 charachter." })
-      return false
     } else if (!values.checkvalue) {
       setFormErrors({ checkValue: "*Please select your languages." })
-      return false
     } else if (!values.gender) {
       setFormErrors({ gender: "*Please select your gender." })
-      return false
     } else if (!values.state) {
       setFormErrors({ state: "*Please select your state." })
-      return false
     } else if (values.state === "City") {
       setFormErrors({ state: "*Please select your state." })
-      return false
     } else {
       setFormErrors("")
-      return true
     }
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     formValues.checkvalue = checkValue.join()
-    if (validate(formValues)) {
-      Axios.post("http://localhost:9000/register", {
-        userDetails: formValues,
-      }).then((response) => {
-        if (response.data.success) {
-          setLoginStatus({ success: response.data.success })
-          setformValues("")
-          e.target.reset()
-        } else {
-          setLoginStatus({ errors: response.data.message })
-        }
+    console.log(imageData)
+    Axios.post("http://localhost:9000/upload", imageData)
+      .then((response) => {
+        console.log(response)
+        setProfileImage({ url: response.data.file })
       })
-    } else {
-      console.log("Error")
-    }
+      .catch((error) => {
+        console.log(error)
+      })
+    formValues.profile_image = profileImage.url
+
+    // if (validate(formValues, imageData)) {
+    //   Axios.post("http://localhost:9000/register", {
+    //     userDetails: formValues,
+    //   }).then((response) => {
+    //     if (response.data.success) {
+    //       setLoginStatus({ success: response.data.success })
+    //       setformValues("")
+    //       e.target.reset()
+    //     } else {
+    //       setLoginStatus({ errors: response.data.message })
+    //     }
+    //   })
+    // } else {
+    //   console.log("Error")
+    // }
   }
 
   const onImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      let img = e.target.files[0]
-      // setProfileImage({ image: URL.createObjectURL(img) })
-      setProfileImage({ preview: img, src: URL.createObjectURL(img) })
+      const image = e.target.files[0]
+      if (image.type.match(/.(jpg|jpeg|png|gif)$/i)) {
+        const formData = new FormData()
+        formData.append("data", image)
+        formData.append("title", "idit")
+        // for (var value of formData.values()) {
+        //   console.log(value)
+        // }
+        setImageData(formData)
+      } else {
+        console.log("data not send")
+        setFormErrors({
+          profile_image: "*Please upload vaild extension profile image.",
+        })
+      }
+    } else {
+      setFormErrors({
+        profile_image: "*Image not found.",
+      })
     }
-    console.log(e.target.files[0])
-    console.log(profileImage)
   }
   return (
     <RegisterStyle>
@@ -113,14 +128,15 @@ export default function RegisterForm() {
           <form onSubmit={handleSubmit}>
             <h2 className="success-message">{loginStatus.success}</h2>
             <h3 className="error-message">{loginStatus.errors}</h3>
-            <h1>Register</h1>
+            <div className="title-header">
+              <h1 className="title">Register</h1>
+              {profileImage?.url && <img src={profileImage.url} alt="" />}
+            </div>
             <div className="image-data">
               <label>Profile Image:</label>
-              <div className="preview-image">
-                <input type="file" name="myImage" onChange={onImageChange} />
-                <img src={profileImage.src} alt="" />
-              </div>
+              <input type="file" name="myImage" onChange={onImageChange} />
             </div>
+            {formErrors?.profile_image && <p>{formErrors.profile_image}</p>}
             <div className="input-data">
               <label>Name: </label>
               <input
