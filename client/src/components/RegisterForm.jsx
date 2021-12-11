@@ -10,12 +10,10 @@ export default function RegisterForm() {
     checkvalue: "",
     gender: "",
     state: "",
-    profile_image: "",
   }
-  const [profileImage, setProfileImage] = useState("")
-  const [imageData, setImageData] = useState()
-  const [formErrors, setFormErrors] = useState({})
   const [formValues, setformValues] = useState(user)
+  const [profileImage, setProfileImage] = useState("")
+  const [formErrors, setFormErrors] = useState({})
   const [checkValue, setCheckValue] = useState([])
   const [loginStatus, setLoginStatus] = useState("")
 
@@ -38,7 +36,7 @@ export default function RegisterForm() {
   const validate = (values, image) => {
     const regexUserName = /^\S*$/
     const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-    if (!image) {
+    if (!image.imageData) {
       setFormErrors({ profile_image: "*Please upload profile image." })
     } else if (!values.username) {
       setFormErrors({ username: "*Please enter your username." })
@@ -64,53 +62,44 @@ export default function RegisterForm() {
       setFormErrors({ state: "*Please select your state." })
     } else {
       setFormErrors("")
+      return true
     }
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     formValues.checkvalue = checkValue.join()
-    console.log(imageData)
-    Axios.post("http://localhost:9000/upload", imageData)
-      .then((response) => {
-        console.log(response)
-        setProfileImage({ url: response.data.file })
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-    formValues.profile_image = profileImage.url
+    const userData = new FormData()
+    userData.append("user", JSON.stringify(formValues))
+    userData.append("profileImage", profileImage.imageData)
 
-    // if (validate(formValues, imageData)) {
-    //   Axios.post("http://localhost:9000/register", {
-    //     userDetails: formValues,
-    //   }).then((response) => {
-    //     if (response.data.success) {
-    //       setLoginStatus({ success: response.data.success })
-    //       setformValues("")
-    //       e.target.reset()
-    //     } else {
-    //       setLoginStatus({ errors: response.data.message })
-    //     }
-    //   })
-    // } else {
-    //   console.log("Error")
-    // }
+    if (validate(formValues, profileImage)) {
+      Axios.post("http://localhost:9000/register", userData)
+        .then((response) => {
+          if (response.data.success) {
+            setLoginStatus({ success: response.data.success })
+            setformValues(user)
+            setProfileImage("")
+            setCheckValue([])
+            e.target.reset()
+          } else {
+            setLoginStatus({ errors: response.data.message })
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    } else {
+      console.log("Error")
+    }
   }
 
   const onImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const image = e.target.files[0]
       if (image.type.match(/.(jpg|jpeg|png|gif)$/i)) {
-        const formData = new FormData()
-        formData.append("data", image)
-        formData.append("title", "idit")
-        // for (var value of formData.values()) {
-        //   console.log(value)
-        // }
-        setImageData(formData)
+        setProfileImage({ imageData: image, url: URL.createObjectURL(image) })
       } else {
-        console.log("data not send")
         setFormErrors({
           profile_image: "*Please upload vaild extension profile image.",
         })

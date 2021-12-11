@@ -1,27 +1,26 @@
 const db = require("../models/index")
-const users = db.Users
 const bcrypt = require("bcrypt")
-
-//upload image
-
-exports.upload = async (req, res) => {
-  const data = req.files
-  res.send(req.body)
-}
+const users = db.Users
 
 // Signup
 
 //POST
 exports.signup = async (req, res) => {
-  const user = req.body
+  const user = JSON.parse(req.body.user)
 
-  const username = user.userDetails.username
-  const email = user.userDetails.email
-  const password = user.userDetails.password
-  const language = user.userDetails.checkvalue
-  const gender = user.userDetails.gender
-  const state = user.userDetails.state
-  const profile_image = user.userDetails.profile_image
+  const username = user.username
+  const email = user.email
+  const password = user.password
+  const language = user.checkvalue
+  const gender = user.gender
+  const state = user.state
+  let profile_image = ""
+
+  if (!req.file) {
+    res.send({ message: "Image not upload" })
+  } else {
+    profile_image = req.file.filename
+  }
 
   if (
     username != "" &&

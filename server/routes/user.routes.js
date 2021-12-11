@@ -4,7 +4,7 @@ const {
   loginPage,
   upload,
 } = require("../controllers/user.controller")
-
+const uploadImage = require("../middleware/imageUpload")
 const router = require("express").Router()
 
 const isAuthorized = (req, res) => {
@@ -16,8 +16,7 @@ const isAuthorized = (req, res) => {
 }
 
 router.get("/login", isAuthorized, loginPage)
-router.post("/register", signup)
 router.post("/login", login)
-router.post("/upload", upload)
+router.post("/register", uploadImage, signup)
 
 module.exports = router

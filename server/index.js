@@ -16,6 +16,8 @@ app.use(
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+app.use("/images", express.static("Images"))
+
 app.use(
   session({
     key: "id",
