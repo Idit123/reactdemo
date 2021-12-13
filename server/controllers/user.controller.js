@@ -8,12 +8,7 @@ const users = db.Users
 exports.signup = async (req, res) => {
   const user = JSON.parse(req.body.user)
 
-  const username = user.username
-  const email = user.email
-  const password = user.password
-  const language = user.checkvalue
-  const gender = user.gender
-  const state = user.state
+  const { username, email, password, language, gender, city } = user
   let profile_image = ""
 
   if (!req.file) {
@@ -23,22 +18,24 @@ exports.signup = async (req, res) => {
   }
 
   if (
-    username != "" &&
-    email != "" &&
-    password != "" &&
-    language != "" &&
-    gender != "" &&
-    state != "" &&
-    profile_image != ""
+    !username &&
+    !email &&
+    !password &&
+    !language &&
+    !gender &&
+    !city &&
+    !profile_image
   ) {
+    res.send({ message: "Fill Up All field." })
+  } else {
     const user = await users.findOne({
       where: {
         email: email,
       },
     })
-    if (user) {
-      res.send({ message: "Email is already exits." })
-    } else {
+
+    if (user) res.send({ message: "Email is already exits." })
+    else {
       const salt = await bcrypt.genSalt(10)
       const encryptpassword = await bcrypt.hash(password, salt)
 
@@ -48,15 +45,11 @@ exports.signup = async (req, res) => {
         password: encryptpassword,
         language,
         gender,
-        state,
+        city,
         profile_image,
       })
-      if (data) {
-        res.send({ success: "Register Successfully." })
-      }
+      data && res.send({ success: "Register Successfully." })
     }
-  } else {
-    res.send({ message: "Fill Up All field." })
   }
 }
 
@@ -69,10 +62,9 @@ exports.loginPage = async (req, res) => {
 
 //POST
 exports.login = async (req, res) => {
-  const data = req.body
+  const user = req.body.user
 
-  const email = data.userDetails.email
-  let password = data.userDetails.password
+  const { email, password } = user
 
   if (email !== "" && password !== "") {
     const user = await users.findOne({

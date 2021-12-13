@@ -9,7 +9,7 @@ module.exports = (sequelize, Sequelize) => {
       password: { type: Sequelize.STRING },
       language: { type: Sequelize.STRING },
       gender: { type: Sequelize.STRING },
-      state: { type: Sequelize.STRING },
+      city: { type: Sequelize.STRING },
       profile_image: { type: Sequelize.STRING },
     },
     {

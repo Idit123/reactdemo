@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import Axios from "axios"
+import { cityDataForRegister } from "../utils/CityStaticData"
 import { RegisterStyle } from "../style/register.style"
 
 export default function RegisterForm() {
@@ -7,9 +8,9 @@ export default function RegisterForm() {
     username: "",
     email: "",
     password: "",
-    checkvalue: "",
+    langauage: "",
     gender: "",
-    state: "",
+    city: "",
   }
   const [formValues, setformValues] = useState(user)
   const [profileImage, setProfileImage] = useState("")
@@ -52,14 +53,12 @@ export default function RegisterForm() {
       setFormErrors({ password: "*Please add at least 8 charachter." })
     } else if (values.password.length > 15) {
       setFormErrors({ password: "*Please add maximum 15 charachter." })
-    } else if (!values.checkvalue) {
-      setFormErrors({ checkValue: "*Please select your languages." })
+    } else if (!values.langauage) {
+      setFormErrors({ langauage: "*Please select your languages." })
     } else if (!values.gender) {
       setFormErrors({ gender: "*Please select your gender." })
-    } else if (!values.state) {
-      setFormErrors({ state: "*Please select your state." })
-    } else if (values.state === "City") {
-      setFormErrors({ state: "*Please select your state." })
+    } else if (!values.city) {
+      setFormErrors({ city: "*Please select your state." })
     } else {
       setFormErrors("")
       return true
@@ -68,7 +67,7 @@ export default function RegisterForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    formValues.checkvalue = checkValue.join()
+    formValues.langauage = checkValue.join()
     const userData = new FormData()
     userData.append("user", JSON.stringify(formValues))
     userData.append("profileImage", profileImage.imageData)
@@ -220,22 +219,20 @@ export default function RegisterForm() {
               </div>
               <div className="dropdown">
                 <select
-                  name="state"
-                  value={formValues.state}
+                  name="city"
+                  value={formValues.city}
                   onChange={handleChange}
                 >
-                  <option value="City">City</option>
-                  <option value="Rajkot">Rajkot</option>
-                  <option value="Ahmedabad">Ahmedabad</option>
-                  <option value="Vadodara">Vadodara</option>
-                  <option value="Surat">Surat</option>
-                  <option value="Jamnagar">Jamnagar</option>
+                  <option value="">Select Your City</option>
+                  {cityDataForRegister.map((city) => (
+                    <option value={city.value}>{city.name}</option>
+                  ))}
                 </select>
               </div>
             </div>
-            {formErrors.checkValue && <p>{formErrors.checkValue}</p>}
+            {formErrors.langauage && <p>{formErrors.langauage}</p>}
             {formErrors.gender && <p>{formErrors.gender}</p>}
-            {formErrors.state && <p>{formErrors.state}</p>}
+            {formErrors.city && <p>{formErrors.city}</p>}
             <div className="submit">
               <button type="submit" className="btn btn-primary">
                 Submit

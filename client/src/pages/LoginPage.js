@@ -1,10 +1,12 @@
 import React from "react"
-import SignInForm from "../components/LoginForm.jsx"
+// import LoginForm from "../components/LoginForm"
+import LoginHookForm from "../components/LoginHookForm"
 
 export default function LoginPage() {
   return (
     <div>
-      <SignInForm />
+      {/* <LoginForm /> */}
+      <LoginHookForm />
     </div>
   )
 }

@@ -44,7 +44,7 @@ export default function LoginForm() {
     e.preventDefault()
     if (validate(formValues)) {
       Axios.post("http://localhost:9000/login", {
-        userDetails: formValues,
+        user: formValues,
       }).then((response) => {
         if (response.data.success) {
           setLoginStatus({ success: response.data.success })
